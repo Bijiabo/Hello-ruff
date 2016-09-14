@@ -1,0 +1,14 @@
+{
+    "name": "hello-ruff",
+    "version": "0.0.1",
+    "description": "my first ruff project",
+    "author": "bijiabo",
+    "main": "src/index.js",
+    "ruff": {
+        "boards": {
+            "ruff-mbd-v1": "^4.1.1",
+            "*": "*"
+        },
+        "dependencies": {}
+    }
+}
