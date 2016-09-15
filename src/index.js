@@ -10,25 +10,55 @@ http://192.168.0.10:3000/index.html?show=r,b&hide=g
 
 */
 
+var lcd = {
+    device: function () {
+        return $('#lcd');
+    },
+    turnOn : function () {
+        this.device().turnOn();
+    },
+    turnOff: function () {
+        this.device().turnOff();
+    },
+    setContent: function (content) {
+        this.device().turnOn();
+        this.clear();
+        this.device().setCursor(1, 0);
+        this.device().print(content);
+    },
+    clear: function () {
+        this.device().clear();
+    }
+};
+
 $.ready(function (error) {
-    $('#led-r').turnOn();
 
     if (error) {
         console.log(error);
         return;
     }
 
+    // setup lcd
+    lcd.setContent("Hello,world!");
+
+    $('#led-r').turnOn();
+
     // 在 `#button` 按下时点亮 `#led-r`.
     $('#button').on('push', function() {
         console.log('Button pushed.');
         $('#led-r').turnOn();
+
+        lcd.setContent('Wang wang wang!');
     });
 
     // 在 `#button` 释放时熄灭 `#led-r`.
     $('#button').on('release', function() {
         console.log('Button released.');
         $('#led-r').turnOff();
+
+        lcd.clear();
     });
+
     //run();
 });
 

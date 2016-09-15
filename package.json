@@ -10,7 +10,9 @@
             "*": "*"
         },
         "dependencies": {
-            "button-gpio": "^2.0.3"
+            "button-gpio": "^2.0.3",
+            "lcd1602-pcf8574a-hd44780": "^0.2.3",
+            "dht11": "^0.3.2"
         }
     }
 }
