@@ -10,25 +10,97 @@ http://192.168.0.10:3000/index.html?show=r,b&hide=g
 
 */
 
+var lcd = {
+    get device () {
+        return $('#lcd');
+    },
+    turnOn : function () {
+        this.device.turnOn();
+    },
+    turnOff: function () {
+        this.device.turnOff();
+    },
+    setContent: function (content) {
+        this.device.turnOn();
+        this.clear();
+        this.device.setCursor(0, 0);
+        this.device.print(content);
+    },
+    clear: function () {
+        this.device.clear();
+    }
+};
+
+var cache = {
+    _temperature: 0,
+    _humidity: 0,
+    updateLCD: function() {
+        lcd.device.setCursor(0, 0);
+        lcd.device.print(this._temperature + 'C|Humidity:' + this._humidity + '%');
+    },
+    set temperature (value) {
+        this._temperature = value;
+        this.updateLCD();
+    },
+    get temperature () {
+        return this._temperature;
+    },
+    set humidity (value) {
+        this._humidity = value;
+        this.updateLCD();
+    },
+    get humidity () {
+        return this._humidity;
+    }
+};
+
 $.ready(function (error) {
-    $('#led-r').turnOn();
 
     if (error) {
         console.log(error);
         return;
     }
 
+    // setup lcd
+    lcd.turnOn();
+    $('#led-r').turnOn();
+
     // 在 `#button` 按下时点亮 `#led-r`.
     $('#button').on('push', function() {
         console.log('Button pushed.');
         $('#led-r').turnOn();
+
+        lcd.setContent('Wang wang wang!');
     });
 
     // 在 `#button` 释放时熄灭 `#led-r`.
     $('#button').on('release', function() {
         console.log('Button released.');
         $('#led-r').turnOff();
+
+        lcd.clear();
     });
+
+    setInterval(
+        function () {
+            var humirature = $('#humirature');
+            humirature.getTemperature(function (error, temperature) {
+                if (error) {
+                    console.error(error);
+                    return;
+                }
+                cache.temperature = temperature;
+            });
+
+            humirature.getRelativeHumidity(function (error, humidity) {
+                if (error) {
+                    console.error(error);
+                    return;
+                }
+                cache.humidity = humidity;
+            });
+        }, 1000);
+
     //run();
 });
 
@@ -88,7 +160,9 @@ var server = http.createServer(function (request, response) {
             <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">\
         </head>\
         <body>\
-            URL: ' + JSON.stringify(datas) + '\
+            <p>URL: ' + JSON.stringify(datas) + '</p>\
+            <p>temperature: ' + cache.temperature + '</p>\
+            <p>humidity: ' + cache.humidity + '</p>\
         </body>\
         </html>\
      ';
