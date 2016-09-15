@@ -143,6 +143,24 @@
                     "reserve": "gpio-18/gpio"
                 }
             }
+        },
+        {
+            "id": "sound",
+            "model": "SOUND-01",
+            "driver": "sound-01",
+            "args": {
+                "interval": 500,
+                "enabled": true
+            },
+            "inputs": {
+                "gpio": {
+                    "type": "gpio",
+                    "args": {
+                        "direction": "in",
+                        "edge": "none"
+                    }
+                }
+            }
         }
     ]
 }

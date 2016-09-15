@@ -81,6 +81,11 @@ $.ready(function (error) {
         lcd.clear();
     });
 
+    $('#sound').interval = 200;
+    $('#sound').on('sound', function(value) {
+        console.log('on sound', value);
+    });
+
     setInterval(
         function () {
             var humirature = $('#humirature');
