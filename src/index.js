@@ -10,49 +10,15 @@ http://192.168.0.10:3000/index.html?show=r,b&hide=g
 
 */
 
-var lcd = {
+var lcd = require('./lcd');
+
+var lightSensor = {
     get device () {
-        return $('#lcd');
-    },
-    turnOn : function () {
-        this.device.turnOn();
-    },
-    turnOff: function () {
-        this.device.turnOff();
-    },
-    setContent: function (content) {
-        this.device.turnOn();
-        this.clear();
-        this.device.setCursor(0, 0);
-        this.device.print(content);
-    },
-    clear: function () {
-        this.device.clear();
+        return $('#lightSensor');
     }
 };
 
-var cache = {
-    _temperature: 0,
-    _humidity: 0,
-    updateLCD: function() {
-        lcd.device.setCursor(0, 0);
-        lcd.device.print(this._temperature + 'C|Humidity:' + this._humidity + '%');
-    },
-    set temperature (value) {
-        this._temperature = value;
-        this.updateLCD();
-    },
-    get temperature () {
-        return this._temperature;
-    },
-    set humidity (value) {
-        this._humidity = value;
-        this.updateLCD();
-    },
-    get humidity () {
-        return this._humidity;
-    }
-};
+var cache = require('./cache');
 
 $.ready(function (error) {
 
@@ -62,7 +28,7 @@ $.ready(function (error) {
     }
 
     // setup lcd
-    lcd.turnOn();
+    lcd.init();
     $('#led-r').turnOn();
 
     // 在 `#button` 按下时点亮 `#led-r`.
@@ -70,7 +36,7 @@ $.ready(function (error) {
         console.log('Button pushed.');
         $('#led-r').turnOn();
 
-        lcd.setContent('Wang wang wang!');
+        cache.pushButton = true;
     });
 
     // 在 `#button` 释放时熄灭 `#led-r`.
@@ -78,7 +44,7 @@ $.ready(function (error) {
         console.log('Button released.');
         $('#led-r').turnOff();
 
-        lcd.clear();
+        cache.pushButton = false;
     });
 
     $('#sound').interval = 200;
@@ -104,7 +70,15 @@ $.ready(function (error) {
                 }
                 cache.humidity = humidity;
             });
-        }, 1000);
+
+            lightSensor.device.getIlluminance(function(error, illuminance) {
+                if (error) {
+                    console.error(error);
+                    return;
+                }
+                cache.illuminance = illuminance;
+            })
+        }, 5000);
 
     //run();
 });
